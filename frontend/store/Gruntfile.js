@@ -9,6 +9,9 @@ module.exports = function (grunt) {
 	// Time how long tasks take. Can help when optimizing build times
 	require('time-grunt')(grunt);
 
+	// Fix windows path issues
+	require('path').sep = '/';
+
 	// New name for replacing in this app
 	var newName = '';
 
@@ -20,6 +23,7 @@ module.exports = function (grunt) {
 			// configurable paths
 			app: require('./bower.json').appPath || 'app',
 			dist: 'dist',
+			deployFolder: 'YOUR_DEPLOY_FOLDER_HERE',// For the app at cdn.mtc.byu.edu/flashcards, this value would be 'flashcards'
 			imagesToCopy: '{webp}'// projects with a large amount of images take forever to minify and deploy. Images should be in a static location as they dont change like code
 		},
 
@@ -136,6 +140,22 @@ module.exports = function (grunt) {
 				options: {
 					base: '<%= yeoman.dist %>'
 				}
+			},
+			coverage: {
+				options: {
+					port: 9090,
+					open: 'http://<%= connect.options.hostname %>:9090',
+					keepalive: true,
+					base: ['coverage/html']
+				}
+			},
+			'test-coverage': {
+				options: {
+					port: 9191,
+					open: 'http://localhost:9191',
+					keepalive: true,
+					base: ['coverage/html-test']
+				}
 			}
 		},
 
@@ -171,6 +191,58 @@ module.exports = function (grunt) {
 			files: ['package.json', 'bower.json', '<%= yeoman.app %>/version.json']
 		},
 
+		// Deploy files for test
+		// Uncomment this out if you want to allow devs to push changes to QA
+		// Set host to be the server where test code lives
+		// 'testKey' can be found in .ftppass in root, set user name/password there
+		// 'dest' should be the folder on the server to put the code in
+
+		// 'sftp-deploy': {
+		// 	test: {
+		// 		auth: {
+		// 			host: 'test-apps1.mtc.byu.edu',
+		// 			port: 22,
+		// 			authKey: 'testKey'
+		// 		},
+		// 		src: '<%= yeoman.dist %>',
+		// 		dest: '/cdn/<%= yeoman.deployFolder %>',
+		// 		exclusions: ['<%= yeoman.dist %>/bower_components/**/*'],
+		// 		server_sep: '/'
+		// 	},
+		// 	dev: {
+		// 		auth: {
+		// 			host: 'dev-apps.mtc.byu.edu',
+		// 			port: 22,
+		// 			authKey: 'devKey'
+		// 		},
+		// 		src: '<%= yeoman.dist %>',
+		// 		dest: '/cdn/<%= yeoman.deployFolder %>',
+		// 		exclusions: ['<%= yeoman.dist %>/bower_components/**/*'],
+		// 		server_sep: '/'
+		// 	},
+		// 	beta: {
+		// 		auth: {
+		// 			host: 'beta-apps1.mtc.byu.edu',
+		// 			port: 22,
+		// 			authKey: 'betaKey'
+		// 		},
+		// 		src: '<%= yeoman.dist %>',
+		// 		dest: '/cdn/<%= yeoman.deployFolder %>',
+		// 		exclusions: ['<%= yeoman.dist %>/bower_components/**/*'],
+		// 		server_sep: '/'
+		// 	},
+		// 	stage: {
+		// 		auth: {
+		// 			host: 'stage-apps.mtc.byu.edu',
+		// 			port: 22,
+		// 			authKey: 'stageKey'
+		// 		},
+		// 		src: '<%= yeoman.dist %>',
+		// 		dest: '/cdn/<%= yeoman.deployFolder %>',
+		// 		exclusions: ['<%= yeoman.dist %>/bower_components/**/*']
+		// 	}
+		// },
+
 		// Empties folders to start fresh
 		clean: {
 			dist: {
@@ -183,7 +255,8 @@ module.exports = function (grunt) {
 					]
 				}]
 			},
-			server: '.tmp'
+			server: '.tmp',
+			coverage: 'coverage'
 		},
 
 		// Add vendor prefixed styles
@@ -325,12 +398,12 @@ module.exports = function (grunt) {
 				src: ['app/version.json', 'app/index.html', 'app/scripts/**/*.js', 'test/spec/controllers/main.js', 'bower.json', 'package.json'],
 				overwrite: true,
 				replacements: [{
-					from: 'angular-template',
+					from: 'grunt-ng-template-mtc',
 					to: function () {
 						return newName;
 					}
 				}, {
-					from: 'angularTemplateApp',
+					from: 'gruntNgTemplateMtcApp',
 					to: function () {
 						var name = newName.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
 						return name + 'App';
@@ -356,9 +429,73 @@ module.exports = function (grunt) {
 
 		// Test settings
 		karma: {
-			unit: {
+			options: {
 				configFile: 'karma.conf.js',
+				reportSlowerThan: 50
+			},
+			unit: {
 				singleRun: true
+			},
+			debug: {
+				singleRun: false
+			},
+			coverage: {
+				singleRun: true,
+				preprocessors: {
+					'app/scripts/**/*.js': 'coverage'
+				},
+				reporters: ['coverage'],
+				coverageReporter: {
+					reporters: [{
+						type: 'html',
+						subdir: 'html'
+					}, {
+						type: 'text',
+						subdir: 'text'
+					}]
+				}
+			},
+			'ci-coverage': {
+				singleRun: true,
+				preprocessors: {
+					'app/scripts/**/*.js': 'coverage'
+				},
+				reporters: ['coverage'],
+				coverageReporter: {
+					reporters: [{
+						type: 'text-summary',
+						subdir: 'text-summary'
+					}]
+				}
+			},
+			'test-coverage': {
+				singleRun: true,
+				preprocessors: {
+					'test/spec/**/*.js': 'coverage'
+				},
+				reporters: ['coverage'],
+				coverageReporter: {
+					reporters: [{
+						type: 'text-summary',
+						subdir: 'text-summary-test'
+					}, {
+						type: 'html',
+						subdir: 'html-test'
+					}]
+				}
+			},
+			'ci-test-coverage': {
+				singleRun: true,
+				preprocessors: {
+					'test/spec/**/*.js': 'coverage'
+				},
+				reporters: ['coverage'],
+				coverageReporter: {
+					reporters: [{
+						type: 'text-summary',
+						subdir: 'text-summary-test'
+					}]
+				}
 			}
 		},
 
@@ -394,12 +531,56 @@ module.exports = function (grunt) {
 		grunt.task.run(['serve']);
 	});
 
-	grunt.registerTask('test', [
-		'clean:server',
-		'concurrent:test',
-		'autoprefixer',
+	grunt.registerTask('print-coverage', [
 		'connect:test',
-		'karma'
+		'karma:ci-coverage'
+	]);
+
+	grunt.registerTask('print-test-coverage', [
+		'connect:test',
+		'karma:ci-test-coverage'
+	]);
+
+	grunt.registerTask('test', [
+		'clean:coverage',
+		'connect:test',
+		'karma:unit',
+		'karma:coverage',
+		'karma:test-coverage'
+	]);
+
+	grunt.registerTask('coverage', [
+		'clean:coverage',
+		'connect:test',
+		'karma:coverage',
+		'connect:coverage'
+	]);
+
+	grunt.registerTask('coverage-test', [
+		'clean:coverage',
+		'connect:test',
+		'karma:test-coverage',
+		'connect:test-coverage'
+	]);
+
+	grunt.registerTask('test-ci', [
+		'clean:server',
+		'clean:coverage',
+		'jshint:all',
+		'jscs',
+		'connect:test',
+		'karma:unit',
+		'concat:less',
+		'less:development',
+		'autoprefixer',
+		'protractor:run',
+		'karma:ci-coverage',
+		'karma:ci-test-coverage'
+	]);
+
+	grunt.registerTask('debug', [
+		'connect:test',
+		'karma:debug'
 	]);
 
 	grunt.registerTask('build', [
