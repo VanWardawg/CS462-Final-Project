@@ -3,4 +3,4 @@ bower_components
 .sass-cache
 .DS_Store
 node_modules
-backend/node_modules
+backend/app/node_modules
