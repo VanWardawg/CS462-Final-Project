@@ -27,7 +27,7 @@ data.drivers = [
 	"name": "Kevin Hinton", "orders":[], "bids":[], "ranking":10}
 ];
 
-app.get('/', function (req, res) {
+app.get('/backend', function (req, res) {
   res.send('Hello World!');
 });
 

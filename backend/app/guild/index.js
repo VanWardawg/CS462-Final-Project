@@ -1,15 +1,14 @@
 module.exports = function(app, uuid, data, request, twilio){
 	var drivers = data.drivers
 
-    app.get('/drivers', function (req, res) {
+    app.get('/backend/drivers', function (req, res) {
 		res.send(drivers);
 	});
 
-	app.post('/drivers', function (req, res) {
+	app.post('/backend/drivers', function (req, res) {
 		var driver = req.body;
 		driver.id = uuid.v4();
 		driver.orders = [];
-		driver.url = "http://localhost:3000/drivers/" + driver.id + "/events";
 		drivers.push(driver);
 		res.json(driver)
 	});
@@ -25,13 +24,13 @@ module.exports = function(app, uuid, data, request, twilio){
 		return driver;
 	}
 
-	app.get('/drivers/:id', function (req, res) {
+	app.get('/backend/drivers/:id', function (req, res) {
 		var id = req.params.id;
 		var driver = getdriver(id);
 		res.json(driver);
 	});
 
-	app.get('/drivers/:id/orders', function (req, res) {
+	app.get('/backend/drivers/:id/orders', function (req, res) {
 		var id = req.params.id;
 		var driver = getdriver(id);
 		res.json(driver.orders);
@@ -48,7 +47,7 @@ module.exports = function(app, uuid, data, request, twilio){
 		return null;
 	}
 
-	app.post('/drivers/:id/orders/:orderId/bid', function (req, res) {
+	app.post('/backend/drivers/:id/orders/:orderId/bid', function (req, res) {
 		var driver = getdriver(req.params.id);
 		var order = getOrder(req.params.orderId, driver);
 		var bid = req.body;
@@ -93,7 +92,7 @@ module.exports = function(app, uuid, data, request, twilio){
 		}
 	}
 
-	app.put('/drivers/:id/orders/:orderId', function (req, res) {
+	app.put('/backend/drivers/:id/orders/:orderId', function (req, res) {
 		var driver = getDriver(req.params.id);
 		var order = req.body;
 		var event = {

@@ -1,16 +1,15 @@
 module.exports = function(app, uuid, data, request, twilio){
 	var shops = data.shops;
 
-    app.get('/shops', function (req, res) {
+    app.get('/backend/shops', function (req, res) {
 		res.send(shops);
 	});
 
-	app.post('/shops', function (req, res) {
+	app.post('/backend/shops', function (req, res) {
 		var shop = req.body;
 		shop.id = uuid.v4();
 		shop.orders = shop.orders || [];
 		shop.subscribers = shop.subscribers || [];
-		shop.url = "http://localhost:3000/shops/" + shop.id + "/events";
 		shops.push(shop);
 		res.json(shop)
 	});
@@ -34,19 +33,19 @@ module.exports = function(app, uuid, data, request, twilio){
 		}
 	}
 
-	app.get('/shops/:id', function (req, res) {
+	app.get('/backend/shops/:id', function (req, res) {
 		var id = req.params.id;
 		var shop = getShop(id);
 		res.json(shop);
 	});
 
-	app.get('/shops/:id/orders', function (req, res) {
+	app.get('/backend/shops/:id/orders', function (req, res) {
 		var id = req.params.id;
 		var shop = getShop(id);
 		res.json(shop.orders);
 	});
 
-	app.post('/shops/:id/orders', function (req, res) {
+	app.post('/backend/shops/:id/orders', function (req, res) {
 		var order = req.body;
 		if(!order.address) {
       		res.send(403, {"status": "error", "error:": "Order must have an address"});
@@ -67,7 +66,7 @@ module.exports = function(app, uuid, data, request, twilio){
 		res.json({"message":"Success"});
 	});
 
-	app.put('/shops/:id/orders/:orderId/bid/:bidId', function (req, res) {
+	app.put('/backend/shops/:id/orders/:orderId/bid/:bidId', function (req, res) {
 		var bid = req.body;
 		var shop = getShop(req.params.id);
 		var order = getOrder(req.params.orderId, shop);
