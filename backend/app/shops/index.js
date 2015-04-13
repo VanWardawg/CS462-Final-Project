@@ -52,6 +52,7 @@ module.exports = function(app, uuid, data, request, twilio){
       		return;
 		}
 		order.id = uuid.v4();
+		order.status = "Awaiting Bids";
 		var shop = getShop(req.params.id);
 		order.shopId = shop.id;
 		shop.orders.push(order);
@@ -71,6 +72,7 @@ module.exports = function(app, uuid, data, request, twilio){
 		var shop = getShop(req.params.id);
 		var order = getOrder(req.params.orderId, shop);
 		order.estimatedDeliveryTime = bid.estimatedDeliveryTime;
+		order.status = "Bid Awarded";
 		var event = {
 			"type":"rqf:bid_awarded",
 			"order": order,
