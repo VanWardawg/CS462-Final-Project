@@ -8,27 +8,77 @@ var uuid = require('node-uuid');
 var request = require('request');
 //Initialize a REST client in a single line:
 var client = require('twilio')('ACf1add1b321c63cc843855ff6ae80dc5e', '85c5c45bf4f995370ab67952fa9813ca');
+var client = require('twilio')('sid', 'token');
+var http = require('http');
+var https = require('https');
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.set('view engine', 'html');
 
 app.listen(3000);
 var data = {};
 
-data.shops = [ 
-	{"id": "26d7e406-0c00-4b85-bb51-5ce814b4cc9a", "name":"Kevin's Awesome flower Shop", "orders":[], 
+data.shops = [
+	{"id": "26d7e406-0c00-4b85-bb51-5ce814b4cc9a", "name":"Kevin's Awesome flower Shop", "orders":[],
 	"phoneNumber":"14802614333", "address":"345 E. 300 N. Provo UT, 84606"}
 ];
 
 data.drivers = [
-	{"id":"e0eb7037-92e7-45b2-bcd7-68e7883665d4", "phoneNumber":"14802614333", 
+	{"id":"e0eb7037-92e7-45b2-bcd7-68e7883665d4", "phoneNumber":"14802614333",
 	"name": "Kevin Hinton", "orders":[], "bids":[], "ranking":10}
 ];
 
 app.get('/backend', function (req, res) {
   res.send('Hello World!');
+});
+
+app.googleMapsUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?';
+app.getJSON = function(options, onResult) {
+    console.log("rest::getJSON");
+
+    var req = https.request(options, function(res)
+    {
+        var output = '';
+        console.log(options.host + ':' + res.statusCode);
+        res.setEncoding('utf8');
+
+        res.on('data', function (chunk) {
+            output += chunk;
+        });
+
+        res.on('end', function() {
+            var obj = JSON.parse(output);
+            onResult(res.statusCode, obj);
+        });
+    });
+
+    req.on('error', function(err) {
+        //res.send('error: ' + err.message);
+    });
+
+    req.end();
+};
+
+app.get('backend/maps', function (req, res) {
+	var options = {
+		host: 'maps.googleapis.com',
+		port: 443,
+		path: '/maps/api/distancematrix/json?',
+		method: 'GET',
+		headers: {
+			Accept: 'application/json'
+		}
+	};
+
+	options.path += 'origins=' + req.params.origins;
+	options.path += '&destinations=' + req.params.destinations;
+	options.path += '&key=' + 'key';
+
+	app.getJSON(options, function (code, result) {
+		res.json(result);
+	});
 });
 
 app.sendMessage = function (phoneNumber, message) {
@@ -76,7 +126,7 @@ function driversRecieveEvent(event) {
 						}
 					}
 				}
-				else {	
+				else {
 					for (var j = 0; j < data.drivers[i].orders.length; j++) {
 						if(data.drivers[i].orders[j].id === event.order.id) {
 							data.drivers[i].orders[j].splice(j, 1);
