@@ -7,7 +7,7 @@ var uuid = require('node-uuid');
 
 var request = require('request');
 //Initialize a REST client in a single line:
-var client = require('twilio')('sid', 'token');
+var client = require('twilio')('ACf1add1b321c63cc843855ff6ae80dc5e', '85c5c45bf4f995370ab67952fa9813ca');
 
 // parse application/json
 app.use(bodyParser.json())
@@ -34,7 +34,7 @@ app.get('/backend', function (req, res) {
 app.sendMessage = function (phoneNumber, message) {
 	client.sendSms({
 	    to: phoneNumber,
-	    from:'Twilio_phonenumber',
+	    from:'+12108535462',
 	    body: message
 	}, function(error, message) {
 	    if (!error) {
