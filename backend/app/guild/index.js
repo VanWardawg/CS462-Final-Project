@@ -54,6 +54,7 @@ module.exports = function(app, uuid, data, request, twilio){
 		bid.id = uuid.v4();
 		bid.driverId = driver.id;
 		if (order != null) {
+			order.status = "Bid Available";
 			var event = {
 				"type":"rqf:bid_available",
 				"order": order,
@@ -95,6 +96,7 @@ module.exports = function(app, uuid, data, request, twilio){
 	app.put('/backend/drivers/:id/orders/:orderId', function (req, res) {
 		var driver = getDriver(req.params.id);
 		var order = req.body;
+		order.status = "Complete";
 		var event = {
 			"type":"delivery:complete",
 			"order": order
