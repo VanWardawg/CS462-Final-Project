@@ -1,0 +1,47 @@
+<h1>
+	{{store.name}}
+</h1>
+<div class="orders">
+	<h2>Orders</h2>
+	<div>
+		<div class="order" ng-repeat="order in store.orders" ng-click="selectedOrder = order">
+			<div>To: {{order.address}}</div>
+			<div>On: {{order.createDate | date:'short'}}</div>
+			<div>What: {{order.name}}</div>
+			<div><b>Status: {{order.status}}</b></div>
+			<div class="bids" ng-show="shouldShowBids(order)">
+				<h3>Bids</h3>
+				<div ng-repeat="bid in order.bids">
+					<div>Estimated Time: {{bid.estimatedDeliveryTime | date:'short'}}</div>
+					<div>Driver: {{bid.driverName}}</div>
+					<div ng-if="bid.status !== 'Awaiting Bids'">
+						<md-button class="md-accent" ng-click="acceptBid(bid, order)">Accept Bid</md-button>
+					</div>
+				</div>
+			</div>
+			<div class="bids" ng-hide="shouldShowBids(order)">
+				<div>Estimated Time: {{awardedBid(order.bids, order).estimatedDeliveryTime | date:'short'}}</div>
+				<div>Driver: {{awardedBid(order.bids, order).driverName}}</div>
+			</div>
+		</div>
+	</div>
+</div>
+<md-button ng-click="startOrder()">
+	Create Order
+</md-button>
+<div ng-show="newOrder">
+	<form name="order">
+		<md-input-container>
+			<label for="street">Address</label>
+			<input name="street" id="street" ng-model="newOrder.address">
+		</md-input-container>
+		<md-input-container>
+			<label for="item">What to deliver?</label>
+			<input name="item" id="street" ng-model="newOrder.name">
+		</md-input-container>
+		<md-input-container layout="row">
+			<md-button ng-click="saveOrder(newOrder)">Submit</md-button>
+			<md-button class="md-warn" ng-click="newOrder = null">Cancel</md-button>
+		</md-input-container>
+	</form>
+</div>

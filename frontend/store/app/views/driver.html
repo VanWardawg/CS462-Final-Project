@@ -1,0 +1,48 @@
+<h1>
+	{{driver.name}}
+</h1>
+<h3>Ranking: {{driver.ranking}}</h3>
+<div class="orders" ng-if="driver.orders.length">
+	<h2>Orders</h2>
+	<div>
+		<div class="order" ng-repeat="order in driver.orders">
+			<div>To: {{order.address}}</div>
+			<div>From: <a ng-href="#/stores/{{order.shopId}}">{{order.shopId}}</a></div>
+			<div>On: {{order.createDate | date:'short'}}</div>
+			<div>What: {{order.name}}</div>
+			<div><b>Status: {{order.status}}</b></div>
+			<div class="bids" ng-if="noPlacedBid(order.bids)">
+				<md-button ng-hide="order.estimatedDeliveryTime" ng-click="calculateTime(order)">
+					<span ng-if="!order.calc">Calculate Your Est. Delivery Time</span>
+					<i class="fa fa-spin fa-spinner" ng-if="order.calc"></i>
+				</md-button>
+				<div ng-show="order.estimatedDeliveryTime">
+					<h3>Est. Time: {{order.estimatedDeliveryTime | number:'1'}} min</h3>
+					<md-button class="md-primary" ng-click="submitBid(order)">Submit Bid</md-button>
+				</div>
+			</div>
+			<div class="bids" ng-if="!noPlacedBid(order.bids)">
+				<h3>Est. Time: {{myBid(order.bids).estimatedDeliveryTime | date:'short'}}</h3>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="my-bids" ng-if="deliveries.length">
+	<h2>My Deliveries</h2>
+	<div ng-repeat="order in deliveries">
+		<div>To: {{order.address}}</div>
+		<div>From: <a ng-href="#/stores/{{order.shopId}}">{{order.shopId}}</a></div>
+		<div>On: {{order.createDate | date:'short'}}</div>
+		<div>What: {{order.name}}</div>
+		<md-button ng-disabled="order.status === 'Complete'" class="md-primary" ng-click="complete(order)">Complete Delivery</md-button>
+	</div>
+</div>
+<div class="my-bids" ng-if="completed.length">
+	<h2>My Deliveries</h2>
+	<div ng-repeat="order in completed">
+		<div>To: {{order.address}}</div>
+		<div>From: <a ng-href="#/stores/{{order.shopId}}">{{order.shopId}}</a></div>
+		<div>On: {{order.createDate | date:'short'}}</div>
+		<div>What: {{order.name}}</div>
+	</div>
+</div>
