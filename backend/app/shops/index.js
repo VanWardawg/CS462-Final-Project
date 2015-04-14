@@ -79,7 +79,7 @@ module.exports = function(app, uuid, data, request, twilio){
 			"bid": bid
 		};
 		app.notifyEvent(event);	
-		res.json({"message":"Success"});
+		res.json(order);
 	});
 
 	function debug(msg){
