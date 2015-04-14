@@ -2,7 +2,7 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" ng-app="flowerStore"> <!--<![endif]-->
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,27 +13,52 @@
 		<!-- build:css styles/vendor.css -->
 		<!-- bower:css -->
 		<link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
+		<link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
 		<!-- endbower -->
 		<!-- endbuild -->
 		<!-- build:css({.tmp,app}) styles/main.css -->
 		<link rel="stylesheet" href="styles/main.css">
 		<!-- endbuild -->
 	</head>
-	<body ng-app="flowerStore"> <!-- Add attribute oauth-hide to body to hide content when doing auth on page load, ie <body ng-app="..." oauth-hide> -->
+	<body ng-controller="MainCtrl" layout="row"> <!-- Add attribute oauth-hide to body to hide content when doing auth on page load, ie <body ng-app="..." oauth-hide> -->
 		<!--[if lt IE 10]>
 			<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 		<![endif]-->
-		<md-content layout="row">
+		<md-sidenav class="md-whiteframe-z2" md-is-locked-open="$mdMedia('gt-md')" md-component-id="left">
+			<md-toolbar>
+				<h1 class="md-toolbar-tools">
+					Navigation
+				</h1>
+			</md-toolbar>
+			<md-content class="md-padding">
+				<md-list class="list">
+					<h2>Stores</h2>
+					<div ng-repeat="store in stores">
+						<a ng-href="#/stores/{{store.id}}">{{store.name}}</a>
+					</div>
+				</md-list>
+				<md-list class="list">
+					<h2>Drivers</h2>
+					<div ng-repeat="driver in drivers">
+						<a ng-href="#/drivers/{{driver.id}}">{{driver.name}}</a>
+					</div>
+				</md-list>
+			</md-content>
+		</md-sidenav>
+		<md-content flex>
 			<md-toolbar>
 				<div class="md-toolbar-tools">
 					<h2>
+						<span ng-if="$mdMedia('sm') || $mdMedia('md')">
+							<md-button ng-click="toggleMenu()">
+								<i class="fa fa-reorder"></i>
+							</md-button>
+						</span>
 						<span>FTL Flower Delivery</span>
 					</h2>
 				</div>
 			</md-toolbar>
-			<footer>
-				<span class="version">{{appName}} v{{version}}</span>
-			</footer>
+			<md-content class="main md-padding" ng-view></md-content>
 		</md-content>
 
 		<!--[if lt IE 9]>
