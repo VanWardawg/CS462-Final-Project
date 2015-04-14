@@ -64,7 +64,7 @@ module.exports = function(app, uuid, data, request, twilio){
 			"shop": shop
 		};
 		app.notifyEvent(event);
-		res.json({"message":"Success"});
+		res.json(order);
 	});
 
 	app.put('/backend/shops/:id/orders/:orderId/bid/:bidId', function (req, res) {
@@ -73,13 +73,14 @@ module.exports = function(app, uuid, data, request, twilio){
 		var order = getOrder(req.params.orderId, shop);
 		order.estimatedDeliveryTime = bid.estimatedDeliveryTime;
 		order.status = "Bid Awarded";
+		order.awardedBid = req.params.bidId;
 		var event = {
 			"type":"rqf:bid_awarded",
 			"order": order,
 			"bid": bid
 		};
 		app.notifyEvent(event);	
-		res.json({"message":"Success"});
+		res.json(bid);
 	});
 
 	function debug(msg){

@@ -8,7 +8,7 @@ var uuid = require('node-uuid');
 var request = require('request');
 //Initialize a REST client in a single line:
 var client = require('twilio')('ACf1add1b321c63cc843855ff6ae80dc5e', '85c5c45bf4f995370ab67952fa9813ca');
-var client = require('twilio')('sid', 'token');
+//var client = require('twilio')('sid', 'token');
 var http = require('http');
 var https = require('https');
 
@@ -20,14 +20,24 @@ app.set('view engine', 'html');
 app.listen(3000);
 var data = {};
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 data.shops = [
 	{"id": "26d7e406-0c00-4b85-bb51-5ce814b4cc9a", "name":"Kevin's Awesome flower Shop", "orders":[],
-	"phoneNumber":"14802614333", "address":"345 E. 300 N. Provo UT, 84606"}
+	"phoneNumber":"14802614333", "address":"345 E. 300 N. Provo UT, 84606"},
+	{"id": "3", "name": "Way Cool Florals", "orders": [], "phoneNumber": "18013367330", "address": "910 Mattea Ln. Springville, UT 84663"}
 ];
 
 data.drivers = [
 	{"id":"e0eb7037-92e7-45b2-bcd7-68e7883665d4", "phoneNumber":"14802614333",
-	"name": "Kevin Hinton", "orders":[], "bids":[], "ranking":10}
+	"name": "Kevin Hinton", "orders":[], "bids":[], "ranking":10},
+	{"id": "5", "phoneNumber": "18013367330",
+	"name": "Erik Donohoo", "orders":[], "bids":[], "ranking":10}
 ];
 
 app.get('/backend', function (req, res) {
@@ -61,7 +71,7 @@ app.getJSON = function(options, onResult) {
     req.end();
 };
 
-app.get('backend/maps', function (req, res) {
+app.get('/backend/maps', function (req, res) {
 	var options = {
 		host: 'maps.googleapis.com',
 		port: 443,
@@ -72,10 +82,10 @@ app.get('backend/maps', function (req, res) {
 		}
 	};
 
-	options.path += 'origins=' + req.params.origins;
-	options.path += '&destinations=' + req.params.destinations;
-	options.path += '&key=' + 'key';
-
+	options.path += 'origins=' + encodeURIComponent(req.query.origins);
+	options.path += '&destinations=' + encodeURIComponent(req.query.destinations);
+	options.path += '&key=' + 'AIzaSyB3muei2gqiJBDzWpP3eE6A7JuH4HOomlU';
+	console.log("path " + options.path);
 	app.getJSON(options, function (code, result) {
 		res.json(result);
 	});
@@ -129,7 +139,7 @@ function driversRecieveEvent(event) {
 				else {
 					for (var j = 0; j < data.drivers[i].orders.length; j++) {
 						if(data.drivers[i].orders[j].id === event.order.id) {
-							data.drivers[i].orders[j].splice(j, 1);
+							data.drivers[i].orders.splice(j, 1);
 							break;
 						}
 					}

@@ -94,7 +94,7 @@ module.exports = function(app, uuid, data, request, twilio){
 	}
 
 	app.put('/backend/drivers/:id/orders/:orderId', function (req, res) {
-		var driver = getDriver(req.params.id);
+		var driver = getdriver(req.params.id);
 		var order = req.body;
 		order.status = "Complete";
 		var event = {
@@ -103,6 +103,6 @@ module.exports = function(app, uuid, data, request, twilio){
 		};
 		adjustRanking(driver, order);
 		app.notifyEvent(event);
-		res.json({"message":"Success"});
+		res.json(driver);
 	});
 }
