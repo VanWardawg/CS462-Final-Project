@@ -93,6 +93,14 @@ module.exports = function(app, uuid, data, request, twilio){
 		}
 	}
 
+	function updateDriverOrder(driver, event) {
+		for (var i = 0; i < driver.orders.length; i++) {
+			if(driver.orders[j].id === event.order.id) {
+				driver.orders[j] = event.order;
+			}
+		}
+	}
+
 	app.put('/backend/drivers/:id/orders/:orderId', function (req, res) {
 		var driver = getdriver(req.params.id);
 		var order = req.body;
@@ -101,6 +109,7 @@ module.exports = function(app, uuid, data, request, twilio){
 			"type":"delivery:complete",
 			"order": order
 		};
+		updateDriverOrder(driver, order);
 		adjustRanking(driver, order);
 		app.notifyEvent(event);
 		res.json(driver);
