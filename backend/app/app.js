@@ -7,8 +7,7 @@ var uuid = require('node-uuid');
 
 var request = require('request');
 //Initialize a REST client in a single line:
-var client = require('twilio')('ACf1add1b321c63cc843855ff6ae80dc5e', '85c5c45bf4f995370ab67952fa9813ca');
-//var client = require('twilio')('sid', 'token');
+var client = require('twilio')('sid', 'token');
 var http = require('http');
 var https = require('https');
 
@@ -25,7 +24,7 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
-});
+OB});
 
 data.shops = [
 	{"id": "26d7e406-0c00-4b85-bb51-5ce814b4cc9a", "name":"Kevin's Awesome flower Shop", "orders":[],
@@ -37,7 +36,9 @@ data.drivers = [
 	{"id":"e0eb7037-92e7-45b2-bcd7-68e7883665d4", "phoneNumber":"14802614333",
 	"name": "Kevin Hinton", "orders":[], "bids":[], "ranking":10},
 	{"id": "5", "phoneNumber": "18013367330",
-	"name": "Erik Donohoo", "orders":[], "bids":[], "ranking":10}
+	"name": "Erik Donohoo", "orders":[], "bids":[], "ranking":10},
+	{"id": "4", "phoneNumber": "18013105636",
+	"name": "Adam Burdett", "orders":[], "bids":[], "ranking":5}
 ];
 
 app.get('/backend', function (req, res) {
@@ -84,7 +85,7 @@ app.get('/backend/maps', function (req, res) {
 
 	options.path += 'origins=' + encodeURIComponent(req.query.origins);
 	options.path += '&destinations=' + encodeURIComponent(req.query.destinations);
-	options.path += '&key=' + 'AIzaSyB3muei2gqiJBDzWpP3eE6A7JuH4HOomlU';
+	options.path += '&key=' + 'google_api_key';
 	console.log("path " + options.path);
 	app.getJSON(options, function (code, result) {
 		res.json(result);
