@@ -95,7 +95,7 @@ app.get('/backend/maps', function (req, res) {
 app.sendMessage = function (phoneNumber, message) {
 	client.sendSms({
 	    to: phoneNumber,
-	    from:'+12108535462',
+	    from:'twilio_number',
 	    body: message
 	}, function(error, message) {
 	    if (!error) {
